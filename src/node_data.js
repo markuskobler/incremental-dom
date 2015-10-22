@@ -59,7 +59,7 @@ function NodeData(nodeName, key) {
 
   /**
    * Whether or not the keyMap is currently valid.
-   * {boolean}
+   * @type {boolean}
    */
   this.keyMapValid = true;
 
@@ -75,10 +75,6 @@ function NodeData(nodeName, key) {
    */
   this.nodeName = nodeName;
 
-  /**
-   * @type {?string}
-   */
-  this.text = null;
 }
 
 

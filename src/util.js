@@ -24,7 +24,18 @@ var hasOwnProperty = Object.prototype.hasOwnProperty;
 /**
  * A cached reference to the create function.
  */
-var create = Object.create;
+var create = Object.create || createPolyfill;
+
+/**
+ * @param {!Object} o
+ * @return {Object}
+ */
+function createPolyfill(o) {
+  /** @constructor */
+  function F() {}
+  F.prototype = o;
+  return new F();
+}
 
 
 /**
@@ -52,4 +63,3 @@ export {
   createMap,
   has
 };
-

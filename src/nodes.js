@@ -23,30 +23,9 @@ import { getNamespaceForTag } from './namespace';
 import { createMap } from './util';
 
 
+
 /**
  * Creates an Element.
- * @param {Document} doc The document with which to create the Element.
- * @param {string} tag The tag for the Element.
- * @param {?string=} key A key to identify the Element.
- * @return {!Element}
- */
-var createElement = function(doc, tag, key) {
-  var namespace = getNamespaceForTag(tag);
-  var el;
-
-  if (namespace) {
-    el = doc.createElementNS(namespace, tag);
-  } else {
-    el = doc.createElement(tag);
-  }
-
-  return el;
-};
-
-
-/**
- * Creates a Node, either a Text or an Element depending on the node name
- * provided.
  * @param {Document} doc The document with which to create the Node.
  * @param {string} nodeName The tag if creating an element or #text to create
  *     a Text.
@@ -54,14 +33,16 @@ var createElement = function(doc, tag, key) {
  * @param {?Array<*>=} statics The static data to initialize the Node
  *     with. For an Element, an array of attribute name/value pairs of
  *     the static attributes for the Element.
- * @return {!Node}
+ * @return {!Element}
  */
-var createNode = function(doc, nodeName, key, statics) {
+var createElement = function(doc, nodeName, key, statics) {
+  var namespace = getNamespaceForTag(nodeName);
   var node;
-  if (nodeName === '#text') {
-    node = doc.createTextNode('');
+
+  if (namespace) {
+    node = doc.createElementNS(namespace, nodeName);
   } else {
-    node = createElement(doc, nodeName, key, statics);
+    node = doc.createElement(nodeName);
   }
 
   initData(node, nodeName, key);
@@ -143,7 +124,7 @@ var registerChild = function(parent, key, child) {
 
 /** */
 export {
-  createNode,
+  createElement,
   getChild,
   registerChild
 };

@@ -15,7 +15,7 @@
  */
 
 import {
-    createNode,
+    createElement,
     getChild,
     registerChild
 } from './nodes';
@@ -63,13 +63,12 @@ var matches = function(node, nodeName, key) {
  * Aligns the virtual Element definition with the actual DOM, moving the
  * corresponding DOM node to the correct location or creating it if necessary.
  * @param {string} nodeName For an Element, this should be a valid tag string.
- *     For a Text, this should be #text.
  * @param {?string=} key The key used to identify this element.
  * @param {?Array<*>=} statics For an Element, this should be an array of
  *     name-value pairs.
- * @return {!Node} The matching node.
+ * @return {!Element} The matching node.
  */
-var alignWithDOM = function(nodeName, key, statics) {
+var alignDOMElement = function(nodeName, key, statics) {
   var context = getContext();
   var walker = context.walker;
   var currentNode = walker.currentNode;
@@ -91,7 +90,7 @@ var alignWithDOM = function(nodeName, key, statics) {
 
       matchingNode = existingNode;
     } else {
-      matchingNode = createNode(context.doc, nodeName, key, statics);
+      matchingNode = createElement(context.doc, nodeName, key, statics);
 
       if (key) {
         registerChild(parent, key, matchingNode);
@@ -114,7 +113,29 @@ var alignWithDOM = function(nodeName, key, statics) {
     walker.currentNode = matchingNode;
   }
 
-  return matchingNode;
+  return /** @type {!Element} */(matchingNode);
+};
+
+/**
+ * @param {string} value
+ * @return {!Text} The matching node.
+ */
+var alignDOMText = function(value) {
+  var context = getContext();
+  var walker = context.walker;
+  var currentNode = walker.currentNode;
+
+  if (currentNode && currentNode.nodeType === 3) { // TextNode
+    currentNode.data = value;
+    return /** @type {!Text} */(currentNode);
+  }
+
+  var textNode = context.doc.createTextNode(value);
+  context.markCreated(textNode);
+  walker.currentParent.insertBefore(textNode, currentNode);
+  walker.currentNode = textNode;
+
+  return textNode;
 };
 
 
@@ -169,6 +190,7 @@ var clearUnvisitedDOM = function(node) {
 
 /** */
 export {
-  alignWithDOM,
+  alignDOMElement,
+  alignDOMText,
   clearUnvisitedDOM
 };

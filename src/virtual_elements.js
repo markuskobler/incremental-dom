@@ -15,7 +15,8 @@
  */
 
 import {
-  alignWithDOM,
+  alignDOMElement,
+  alignDOMText,
   clearUnvisitedDOM
 } from './alignment';
 import { updateAttribute } from './attributes';
@@ -133,7 +134,7 @@ var elementOpen = function(tag, key, statics, var_args) {
     assertNotInAttributes();
   }
 
-  var node = /** @type {!Element}*/(alignWithDOM(tag, key, statics));
+  var node = alignDOMElement(tag, key, statics);
   var data = getData(node);
 
   /*
@@ -317,31 +318,15 @@ var elementPlaceholder = function(tag, key, statics, var_args) {
 /**
  * Declares a virtual Text at this point in the document.
  *
- * @param {string|number|boolean} value The value of the Text.
- * @param {...(function((string|number|boolean)):string)} var_args
- *     Functions to format the value which are called only when the value has
- *     changed.
+ * @param {string} value The value of the Text.
  * @return {!Text} The corresponding text node.
  */
-var text = function(value, var_args) {
+var text = function(value) {
   if (process.env.NODE_ENV !== 'production') {
     assertNotInAttributes();
   }
 
-  var node = /** @type {!Text}*/(alignWithDOM('#text', null));
-  var data = getData(node);
-
-  if (data.text !== value) {
-    data.text = /** @type {string} */(value);
-
-    var formatted = value;
-    for (var i = 1; i < arguments.length; i += 1) {
-      formatted = arguments[i](formatted);
-    }
-
-    node.data = formatted;
-  }
-
+  var node = alignDOMText(value);
   nextSibling();
   return node;
 };
